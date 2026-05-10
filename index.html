@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Liên Quân - Skin Trận Ảo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3)), url('https://ngaphukhang.vn/wp-content/uploads/hinh-nen-4k-anh-lien-quan-cuc-net-5.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Container chính */
+        .game-container {
+            position: relative;
+            z-index: 2;
+            max-width: 680px;
+            margin: 0 auto;
+            background: rgba(12, 25, 45, 0.15);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 48px;
+            border: 1px solid rgba(0, 168, 255, 0.25);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            animation: fadeIn 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, rgba(0, 40, 70, 0.5), rgba(0, 20, 40, 0.55));
+            padding: 24px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 168, 255, 0.3);
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 800;  /* Rất đậm */
+            letter-spacing: 1px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 168, 255, 0.5);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 0px rgba(0, 168, 255, 0); opacity: 0.9; }
+            50% { text-shadow: 0 0 18px rgba(0, 168, 255, 0.9); opacity: 1; }
+            100% { text-shadow: 0 0 0px rgba(0, 168, 255, 0); opacity: 0.9; }
+        }
+
+        .header p {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            background: rgba(0,0,0,0.2);
+            display: inline-block;
+            padding: 5px 16px;
+            border-radius: 30px;
+            margin-top: 10px;
+        }
+
+        /* Thanh tìm kiếm */
+        .search-area {
+            padding: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: rgba(5, 15, 25, 0.25);
+            backdrop-filter: blur(8px);
+            border-radius: 44px;
+            border: 1px solid rgba(0, 168, 255, 0.35);
+            padding: 4px 20px;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .search-box:focus-within {
+            border-color: #00a8ff;
+            box-shadow: 0 0 0 3px rgba(0, 168, 255, 0.2);
+            transform: scale(1.02);
+        }
+
+        .search-box span {
+            color: #00a8ff;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        #search {
+            width: 100%;
+            background: transparent;
+            border: none;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: 500;
+            color: #fff;
+            outline: none;
+        }
+
+        #search::placeholder {
+            color: rgba(255,255,255,0.6);
+            font-weight: 400;
+        }
+
+        /* Thống kê */
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 20px;
+            margin: 0 16px 12px;
+            background: rgba(0, 30, 55, 0.25);
+            backdrop-filter: blur(4px);
+            border-radius: 40px;
+            color: #b0d4ff;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .badge-dark {
+            background: rgba(0, 60, 100, 0.5);
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Danh sách skin */
+        .skin-list {
+            list-style: none;
+            padding: 8px 18px 28px;
+            max-height: 54vh;
+            overflow-y: auto;
+        }
+
+        .skin-list li {
+            background: rgba(8, 20, 35, 0.2);
+            backdrop-filter: blur(4px);
+            margin-bottom: 12px;
+            padding: 12px 18px;
+            border-radius: 60px;
+            border: 0.5px solid rgba(0, 168, 255, 0.25);
+            color: #e8f0fe;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+            opacity: 0;
+            font-weight: 700;  /* IN ĐẬM TÊN SKIN */
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .skin-list li:hover {
+            transform: scale(1.02) translateY(-2px);
+            background: rgba(0, 120, 200, 0.3);
+            border-color: #00a8ff;
+            box-shadow: 0 6px 18px rgba(0, 168, 255, 0.25);
+        }
+
+        /* Hiệu ứng shimmer mượt hơn */
+        .skin-list li:hover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+            animation: shimmer 0.9s ease-out;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Delay mượt hơn cho từng item */
+        .skin-list li:nth-child(1) { animation-delay: 0.03s; }
+        .skin-list li:nth-child(2) { animation-delay: 0.06s; }
+        .skin-list li:nth-child(3) { animation-delay: 0.09s; }
+        .skin-list li:nth-child(4) { animation-delay: 0.12s; }
+        .skin-list li:nth-child(5) { animation-delay: 0.15s; }
+        .skin-list li:nth-child(6) { animation-delay: 0.18s; }
+        .skin-list li:nth-child(7) { animation-delay: 0.21s; }
+        .skin-list li:nth-child(8) { animation-delay: 0.24s; }
+        .skin-list li:nth-child(9) { animation-delay: 0.27s; }
+        .skin-list li:nth-child(10) { animation-delay: 0.30s; }
+        .skin-list li:nth-child(11) { animation-delay: 0.33s; }
+        .skin-list li:nth-child(12) { animation-delay: 0.36s; }
+        .skin-list li:nth-child(13) { animation-delay: 0.39s; }
+        .skin-list li:nth-child(14) { animation-delay: 0.42s; }
+        .skin-list li:nth-child(15) { animation-delay: 0.45s; }
+        .skin-list li:nth-child(16) { animation-delay: 0.48s; }
+        .skin-list li:nth-child(17) { animation-delay: 0.51s; }
+        .skin-list li:nth-child(18) { animation-delay: 0.54s; }
+        .skin-list li:nth-child(19) { animation-delay: 0.57s; }
+        .skin-list li:nth-child(20) { animation-delay: 0.60s; }
+        .skin-list li:nth-child(21) { animation-delay: 0.63s; }
+        .skin-list li:nth-child(22) { animation-delay: 0.66s; }
+        .skin-list li:nth-child(23) { animation-delay: 0.69s; }
+        .skin-list li:nth-child(24) { animation-delay: 0.72s; }
+        .skin-list li:nth-child(25) { animation-delay: 0.75s; }
+        .skin-list li:nth-child(26) { animation-delay: 0.78s; }
+        .skin-list li:nth-child(27) { animation-delay: 0.81s; }
+        .skin-list li:nth-child(28) { animation-delay: 0.84s; }
+        .skin-list li:nth-child(29) { animation-delay: 0.87s; }
+        .skin-list li:nth-child(30) { animation-delay: 0.90s; }
+        .skin-list li:nth-child(31) { animation-delay: 0.93s; }
+        .skin-list li:nth-child(32) { animation-delay: 0.96s; }
+        .skin-list li:nth-child(33) { animation-delay: 0.99s; }
+        .skin-list li:nth-child(34) { animation-delay: 1.02s; }
+        .skin-list li:nth-child(35) { animation-delay: 1.05s; }
+        .skin-list li:nth-child(36) { animation-delay: 1.08s; }
+        .skin-list li:nth-child(37) { animation-delay: 1.11s; }
+        .skin-list li:nth-child(38) { animation-delay: 1.14s; }
+        .skin-list li:nth-child(39) { animation-delay: 1.17s; }
+        .skin-list li:nth-child(40) { animation-delay: 1.20s; }
+
+        /* Ô số - đậm hơn */
+        .skin-index {
+            background: rgba(10, 76, 110, 0.25);
+            backdrop-filter: blur(4px);
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 40px;
+            font-weight: 800;  /* Rất đậm */
+            font-size: 15px;
+            color: #fff;
+            flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            animation: bounce 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+            opacity: 0;
+        }
+
+        @keyframes bounce {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .skin-name {
+            flex: 1;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            font-weight: 700;  /* IN ĐẬM TÊN */
+            letter-spacing: 0.3px;
+        }
+
+        .skin-list::-webkit-scrollbar {
+            width: 3px;
+        }
+        .skin-list::-webkit-scrollbar-track {
+            background: rgba(0, 168, 255, 0.1);
+            border-radius: 10px;
+        }
+        .skin-list::-webkit-scrollbar-thumb {
+            background: #00a8ff;
+            border-radius: 10px;
+        }
+
+        .footer-note {
+            text-align: center;
+            padding: 12px;
+            margin: 0 20px 24px;
+            font-size: 10px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+            background: rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(4px);
+            border-radius: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="header">
+        <h1>LIST SKIN TRẬN ẢO KHI DÙNG UNLOCK</h1>
+        <p>🔴🟡🟢</p>
+    </div>
+
+    <div class="search-area">
+        <div class="search-box">
+            <span>🔍</span>
+            <input type="text" id="search" placeholder="Tìm tướng hoặc skin (VD: Hayate, Vio...)">
+        </div>
+    </div>
+
+    <div class="stats">
+        <span>📋 Tổng số skin lỗi</span>
+        <span id="totalCount" class="badge-dark">0</span>
+    </div>
+
+    <ul class="skin-list" id="skinList"></ul>
+    <div class="footer-note">
+        ‼️ KHUYẾN CÁO: KHÔNG DÙNG NHỮNG SKIN CÓ TRONG LIST ĐỂ TRÁNH TRẬN ẢO ‼️
+    </div>
+</div>
+
+<script>
+    const skinData = [
+        "Airi Bích Hải Thánh Nữ", "Aoi Mikasa", "Aya Công Chúa Cầu Vồng",
+        "Bolt Baron Thiên Phủ - Tư Mệnh", "Bijan Lữ Hành Thời Không", "Billow Thiên Tướng - Độ Ách",
+        "Capheny Càn Nguyên Điện Chủ", "Cresh Eren", "Điêu Thuyền Nhật Nguyệt Thánh Linh",
+        "Dolia Mã Khởi Thiên Ca", "Eland'orr Mộng Giới Yêu Chủ", "Erin Nguyệt Ảnh Minh Điệp",
+        "Hayate Siêu Đạo Chích Kid", "Hayate Tu Di Thánh Đế", "Iggy Rimuru", "Ilumia Lưỡng Nghi Long Hậu",
+        "Krixi Phù Thuỷ Thời Không", "Krixi Tatsumaki Lốc Xoáy Kinh Hoàng", "Lauriel Mã Đằng Cửu Thế",
+        "Lauriel Thứ Nguyên Vệ Thần", "Nakroth Bạch Diện Chiến Thương", "Nakroth Levi", "Nakroth Quỷ Thương Liệp Đế",
+        "Pain Megumi Fushiguro", "Qi Milim Nava", "Stuart Siêu Trùm Phần Diện", "Tel'Annas Lân Quang Thánh Điệu",
+        "Tel'Annas Tân Niên Vệ Thần", "Tel'Annas Thần Sứ F.E.E-X1", "Veera Thất Sát - Thượng Sinh",
+        "Violet Huyết Ma Thần", "Violet Nobara Kugisaki", "Violet Thần Long Tỉ Tỉ", "Violet Vọng Nguyệt Long Cơ",
+        "Violet Vợ Người Ta", "Yorn Conan Edogawa", "Yue Hỗn Độn Thần Ma"
+    ];
+
+    const uniqueSorted = [...new Map(skinData.map(s => [s.toLowerCase(), s])).values()];
+    uniqueSorted.sort((a, b) => a.localeCompare(b, 'vi', { sensitivity: 'base' }));
+
+    function renderList(items) {
+        const ul = document.getElementById('skinList');
+        const totalSpan = document.getElementById('totalCount');
+        ul.innerHTML = '';
+        if (items.length === 0) {
+            const li = document.createElement('li');
+            li.style.justifyContent = 'center';
+            li.style.fontWeight = '600';
+            li.innerHTML = `<span>❌ Không tìm thấy skin nào ❌</span>`;
+            ul.appendChild(li);
+            totalSpan.innerText = '0';
+            return;
+        }
+        items.forEach((skin, idx) => {
+            const li = document.createElement('li');
+            const indexSpan = document.createElement('span');
+            indexSpan.className = 'skin-index';
+            indexSpan.innerText = idx + 1;
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'skin-name';
+            nameSpan.innerText = skin;
+            li.appendChild(indexSpan);
+            li.appendChild(nameSpan);
+            ul.appendChild(li);
+        });
+        totalSpan.innerText = items.length;
+    }
+
+    function searchSkin() {
+        const keyword = document.getElementById('search').value.toLowerCase().trim();
+        if (keyword === "") renderList(uniqueSorted);
+        else {
+            const filtered = uniqueSorted.filter(skin => skin.toLowerCase().includes(keyword));
+            renderList(filtered);
+        }
+    }
+
+    renderList(uniqueSorted);
+    document.getElementById('search').addEventListener('input', searchSkin);
+</script>
+
+<!-- Nút điều khiển nhạc -->
+<div style="position: fixed; bottom: 20px; right: 20px; z-index: 999;">
+    <button id="musicToggle" style="background: rgba(0,168,255,0.7); border: none; border-radius: 50px; padding: 10px 16px; color: white; font-weight: bold; backdrop-filter: blur(8px); cursor: pointer;">
+        🎵 Bật nhạc
+    </button>
+</div>
+
+<audio id="bgMusic" loop preload="auto">
+    <source src="YTSave.com_YouTube_Doi-Tinh-Doi-Ao-QKhanh-x-Dong-x-Thazh-Re_Media_AsT-tLRmX5Q_006_144p.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    var music = document.getElementById('bgMusic');
+    var toggleBtn = document.getElementById('musicToggle');
+    var isPlaying = false;
+    
+    music.volume = 0.25;
+    
+    toggleBtn.addEventListener('click', function() {
+        if (isPlaying) {
+            music.pause();
+            toggleBtn.innerHTML = '🎵 Bật nhạc';
+        } else {
+            music.play();
+            toggleBtn.innerHTML = '🔇 Tắt nhạc';
+        }
+        isPlaying = !isPlaying;
+    });
+</script>
+</body>
+</html>
