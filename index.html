@@ -393,57 +393,229 @@
     document.getElementById('search').addEventListener('input', searchSkin);
 </script>
 
-<!-- Nút điều khiển nhạc có animation -->
-<div style="position: fixed; bottom: 25px; right: 25px; z-index: 999;">
-    <button id="musicToggle" style="background: rgba(0,168,255,0.75); border: none; border-radius: 60px; padding: 12px 18px; color: white; font-weight: bold; backdrop-filter: blur(10px); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1); box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-        🎵 <span id="btnText">Bật nhạc</span>
-    </button>
+<!-- Nút nhạc thu gọn mép phải -->
+<div style="position: fixed; right: -25px; top: 50%; transform: translateY(-50%); z-index: 999; transition: right 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);" id="musicContainer">
+    <!-- Nút tròn - sẽ thu gọn/xòe ra -->
+    <div id="musicButton" style="width: 50px; height: 50px; background: rgba(120, 120, 128, 0.4); backdrop-filter: blur(12px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2); transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1); border: 0.5px solid rgba(255,255,255,0.2);">
+        <span id="musicIcon" style="color: white; font-size: 22px; transition: all 0.2s;">🎵</span>
+    </div>
 </div>
 
-<audio id="bgMusic" loop preload="auto">
+<!-- Popup điều khiển (ẩn, xuất hiện khi bấm vào nút) -->
+<div id="musicPopup" style="position: fixed; top: 50%; right: 35px; transform: translateY(-50%); background: rgba(30, 30, 35, 0.9); backdrop-filter: blur(20px); border-radius: 24px; padding: 14px 20px; border: 0.5px solid rgba(255,255,255,0.2); box-shadow: 0 8px 25px rgba(0,0,0,0.3); display: none; flex-direction: column; gap: 12px; align-items: center; min-width: 130px; z-index: 998; animation: popupFadeIn 0.2s ease-out;">
+    <div style="color: white; font-size: 12px; font-weight: 600;">🎵 MUSIC</div>
+    <button id="musicToggle" style="background: rgba(0,168,255,0.8); border: none; border-radius: 30px; padding: 6px 18px; color: white; font-weight: 600; font-size: 13px; cursor: pointer; width: 90px; transition: all 0.2s;">
+        🎵 Bật
+    </button>
+    <div style="font-size: 9px; color: rgba(255,255,255,0.5);">Bấm vào nút 🎵</div>
+</div>
+
+<audio id="bgMusic" preload="auto">
     <source src="music.mp3" type="audio/mpeg">
 </audio>
+
+<style>
+    @keyframes popupFadeIn {
+        from { opacity: 0; transform: translateY(10px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    @keyframes spinDisc {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .spin-animation {
+        animation: spinDisc 3s linear infinite;
+    }
+    
+    .expanded {
+        right: 0px !important;
+    }
+    
+    .collapsed {
+        right: -25px !important;
+    }
+</style>
 
 <script>
     var music = document.getElementById('bgMusic');
     var toggleBtn = document.getElementById('musicToggle');
-    var btnText = document.getElementById('btnText');
+    var musicContainer = document.getElementById('musicContainer');
+    var musicButton = document.getElementById('musicButton');
+    var musicPopup = document.getElementById('musicPopup');
+    var musicIcon = document.getElementById('musicIcon');
     var isPlaying = false;
-    music.volume = 0.40;
+    var isWaiting = false;
+    var waitTimeout;
+    var popupVisible = false;
+    var fadeTimeout;
+    music.volume = 0.25;
     
-    toggleBtn.addEventListener('click', function() {
-        // Thêm animation xoay nhẹ cho nút
-        toggleBtn.style.transform = 'scale(0.95)';
-        setTimeout(() => {
-            toggleBtn.style.transform = 'scale(1)';
-        }, 150);
-        
-        if (isPlaying) {
-            music.pause();
-            toggleBtn.innerHTML = '🎵 <span id="btnText">Bật nhạc</span>';
-            toggleBtn.style.background = 'rgba(0,168,255,0.75)';
-            btnText = document.getElementById('btnText');
-        } else {
-            music.play();
-            toggleBtn.innerHTML = '🔊 <span id="btnText">Tắt nhạc</span>';
-            toggleBtn.style.background = 'rgba(220, 60, 60, 0.8)';
-            btnText = document.getElementById('btnText');
+    // Hàm mở rộng nút ra
+    function expandButton() {
+        musicContainer.classList.remove('collapsed');
+        musicContainer.classList.add('expanded');
+        musicButton.style.width = '50px';
+        musicButton.style.height = '50px';
+    }
+    
+    // Hàm thu gọn nút vào mép
+    function collapseButton() {
+        if (!isPlaying) {
+            musicContainer.classList.remove('expanded');
+            musicContainer.classList.add('collapsed');
+            musicButton.style.width = '50px';
+            musicButton.style.height = '50px';
+            // Nếu popup đang mở thì đóng
+            if (popupVisible) {
+                musicPopup.style.display = 'none';
+                popupVisible = false;
+            }
         }
-        isPlaying = !isPlaying;
+    }
+    
+    // Bấm nút tròn
+    musicButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        
+        // Bật/tắt popup
+        if (popupVisible) {
+            musicPopup.style.display = 'none';
+            popupVisible = false;
+            if (fadeTimeout) clearTimeout(fadeTimeout);
+            // Nếu không phát nhạc thì thu gọn
+            if (!isPlaying) collapseButton();
+        } else {
+            expandButton();
+            musicPopup.style.display = 'flex';
+            popupVisible = true;
+            
+            // Auto hide popup sau 3s
+            if (fadeTimeout) clearTimeout(fadeTimeout);
+            fadeTimeout = setTimeout(() => {
+                if (popupVisible && !musicPopup.matches(':hover') && !musicButton.matches(':hover')) {
+                    musicPopup.style.display = 'none';
+                    popupVisible = false;
+                    if (!isPlaying) collapseButton();
+                }
+            }, 3000);
+        }
     });
     
-    // Animation nhạc xoay khi đang phát (cho icon)
-    setInterval(function() {
-        if (isPlaying) {
-            var icon = toggleBtn.innerHTML.substring(0, 2);
-            if (icon === '🎵') {
-                toggleBtn.innerHTML = '🎶 <span id="btnText">Tắt nhạc</span>';
-            } else if (icon === '🎶') {
-                toggleBtn.innerHTML = '🎵 <span id="btnText">Tắt nhạc</span>';
-            }
-            btnText = document.getElementById('btnText');
+    // Giữ popup khi hover
+    musicPopup.addEventListener('mouseenter', function() {
+        if (fadeTimeout) clearTimeout(fadeTimeout);
+    });
+    
+    musicPopup.addEventListener('mouseleave', function() {
+        if (popupVisible) {
+            fadeTimeout = setTimeout(() => {
+                if (popupVisible && !musicPopup.matches(':hover')) {
+                    musicPopup.style.display = 'none';
+                    popupVisible = false;
+                    if (!isPlaying) collapseButton();
+                }
+            }, 1000);
         }
-    }, 500);
+    });
+    
+    // Bấm ra ngoài đóng popup
+    document.addEventListener('click', function(event) {
+        if (popupVisible && !musicButton.contains(event.target) && !musicPopup.contains(event.target)) {
+            musicPopup.style.display = 'none';
+            popupVisible = false;
+            if (fadeTimeout) clearTimeout(fadeTimeout);
+            if (!isPlaying) collapseButton();
+        }
+    });
+    
+    music.addEventListener('ended', function() {
+        if (isPlaying) {
+            isWaiting = true;
+            toggleBtn.style.opacity = '0.6';
+            toggleBtn.innerHTML = '⏳ 30s';
+            
+            waitTimeout = setTimeout(function() {
+                isWaiting = false;
+                toggleBtn.style.opacity = '1';
+                if (isPlaying) {
+                    music.play();
+                    toggleBtn.innerHTML = '🔊 Tắt';
+                    toggleBtn.style.background = 'rgba(220, 60, 60, 0.85)';
+                }
+            }, 30000);
+        }
+    });
+    
+    // Bấm nút bật/tắt nhạc
+    toggleBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleBtn.style.transform = 'scale(0.92)';
+        setTimeout(() => {
+            toggleBtn.style.transform = 'scale(1)';
+        }, 120);
+        
+        if (isPlaying) {
+            // Tắt nhạc
+            music.pause();
+            music.currentTime = 0;
+            if (waitTimeout) clearTimeout(waitTimeout);
+            isWaiting = false;
+            toggleBtn.innerHTML = '🎵 Bật';
+            toggleBtn.style.background = 'rgba(0,168,255,0.8)';
+            isPlaying = false;
+            musicIcon.innerHTML = '🎵';
+            musicButton.classList.remove('spin-animation');
+            // Thu gọn nút vào mép
+            collapseButton();
+            // Đóng popup nếu đang mở
+            if (popupVisible) {
+                musicPopup.style.display = 'none';
+                popupVisible = false;
+            }
+        } else {
+            // Bật nhạc
+            isPlaying = true;
+            music.play();
+            toggleBtn.innerHTML = '🔊 Tắt';
+            toggleBtn.style.background = 'rgba(220, 60, 60, 0.85)';
+            musicIcon.innerHTML = '🎶';
+            musicButton.classList.add('spin-animation');
+            // Mở rộng nút ra
+            expandButton();
+            // Đóng popup sau khi bật
+            if (popupVisible) {
+                setTimeout(() => {
+                    musicPopup.style.display = 'none';
+                    popupVisible = false;
+                }, 800);
+            }
+        }
+    });
+    
+    // Nhấp nháy icon khi đang phát
+    setInterval(function() {
+        if (isPlaying && !isWaiting) {
+            var content = toggleBtn.innerHTML;
+            if (content.includes('🎵')) {
+                toggleBtn.innerHTML = '🎶 Tắt';
+            } else if (content.includes('🎶')) {
+                toggleBtn.innerHTML = '🔊 Tắt';
+            } else if (content.includes('🔊')) {
+                toggleBtn.innerHTML = '🎵 Tắt';
+            }
+            
+            if (musicIcon.innerHTML === '🎵') {
+                musicIcon.innerHTML = '🎶';
+            } else {
+                musicIcon.innerHTML = '🎵';
+            }
+        }
+    }, 600);
+    
+    // Khởi tạo trạng thái ban đầu
+    collapseButton();
 </script>
 </body>
 </html>
